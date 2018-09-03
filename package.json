@@ -1,0 +1,7 @@
+{
+  "name": "cny_js_beautify",
+  "version": "0.0.3",
+  "description": "beautify",
+  "main": "index.js",
+  "license": "MIT"
+}
