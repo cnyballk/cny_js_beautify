@@ -474,12 +474,11 @@ Beautifier.prototype._handle_text = function(
   last_tag_token
 ) {
   var parser_token = { text: raw_token.text, type: 'TK_CONTENT' };
-  // if (
-  //   raw_token.previous.type !== TOKEN.TEXT &&
-  //   raw_token.next.type !== TOKEN.TEXT
-  // ) {
-  // }
-  if (last_tag_token.has_wrapped_attrs) {
+  if (
+    last_tag_token.has_wrapped_attrs ||
+    this.is_perv_tag_close(raw_token) ||
+    this.is_next_tag_open(raw_token)
+  ) {
     printer.print_newline(false);
   }
   if (last_tag_token.custom_beautifier) {
@@ -553,22 +552,51 @@ Beautifier.prototype._print_custom_beatifier_text = function(
     }
   }
 };
-
+//判断下一个是不是开标签  <xxxxx>
+Beautifier.prototype.is_next_tag_open = function(raw_token) {
+  return (
+    raw_token.next.type === TOKEN.TAG_OPEN &&
+    raw_token.next.text.substr(0, 2) !== '</'
+  );
+};
+//判断上一个是不是闭合标签 </xxxx> or <xxxxx />
+Beautifier.prototype.is_perv_tag_close = function(raw_token) {
+  return (
+    (raw_token.previous && raw_token.previous.text === '/>') ||
+    (raw_token.previous.text === '>' &&
+      (raw_token.previous.previous &&
+        raw_token.previous.previous.text.substr(0, 2) === '</'))
+  );
+};
 Beautifier.prototype._handle_tag_open = function(
   printer,
   raw_token,
   last_tag_token,
   last_token
 ) {
-  //可能不会转行
+  ////////////////////////////////////////转行
+  //如果是打开标签并且不是</xxx>
+  if (raw_token.type === TOKEN.TAG_OPEN && raw_token.text.indexOf('</') !== 0) {
+    printer.print_newline(false);
+  }
+  ////上一个是其他的结束标签
   if (
-    raw_token.previous.type === TOKEN.TEXT &&
-    (last_tag_token.has_wrapped_attrs ||
-      (raw_token.previous.previous.text === '>' &&
-        raw_token.previous.previous.previous.text.substr(0, 2) === '</'))
+    (raw_token.previous && raw_token.previous.text === '/>') ||
+    (raw_token.previous.previous &&
+      raw_token.previous.previous.text.substr(0, 2) === '</')
   ) {
     printer.print_newline(false);
   }
+  if (
+    ////上一个是文本并且有属性或者上一个有其他组件
+    raw_token.previous &&
+    raw_token.previous.type === TOKEN.TEXT &&
+    (last_tag_token.has_wrapped_attrs ||
+      this.is_perv_tag_close(raw_token.previous))
+  ) {
+    printer.print_newline(false);
+  }
+  //////////////////////////////////////////////
   var parser_token = this._get_tag_open_token(raw_token);
   printer.traverse_whitespace(raw_token);
 

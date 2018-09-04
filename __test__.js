@@ -5,7 +5,7 @@ var a = `
 <button id="x" ></button>
 `;
 var a2 = `
-    <button >11</button>
+    <button ><button ></button><button >11</button><button ></button></button>
 `;
 const test = () => {
   var b = style_html(a, {
@@ -13,10 +13,11 @@ const test = () => {
     wrap_attributes_count: 3,
     wrap_attributes: 'force-expand-multiline',
   });
+  console.log('=1=');
   console.log(a);
-  console.log('\n');
+  console.log('==');
   console.log(b);
-  console.log('\n');
+  console.log('==');
 };
 const test2 = () => {
   var b = style_html(a2, {
@@ -24,10 +25,11 @@ const test2 = () => {
     wrap_attributes_count: 4,
     wrap_attributes: 'force-expand-multiline',
   });
+  console.log('=1=');
   console.log(a2);
-  console.log('\n');
+  console.log('==');
   console.log(b);
-  console.log('\n');
+  console.log('==');
 };
 test();
 test2();

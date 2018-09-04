@@ -56,27 +56,32 @@ Tokenizer.prototype.tokenize = function() {
       open_token = open_stack.pop();
       current.parent = open_token;
     }
-    //有点小问题  暂时不弄先了
-    // if (
-    //   previous.type === TOKEN.CLOSE &&
-    //   previous.text !== '/>' &&
-    //   current.type === TOKEN.OPEN &&
-    //   current.text.substr(0, 2) === '</'
-    // ) {
-    //   previous.text = '/>';
-    //   current = this._get_next_token(current, open_token);
-    //   if (open_token && this._is_closing(current, open_token)) {
-    //     current.opened = open_token;
-    //     open_token.closed = current;
-    //     open_token = open_stack.pop();
-    //     current.parent = open_token;
-    //   }
-    //   current = this._get_next_token(current, open_token);
-    //   if (this._is_opening(current)) {
-    //     open_stack.push(open_token);
-    //     open_token = current;
-    //   }
-    // }
+    ////////////////////////如果组件内无子元素则直接闭合标签
+    if (
+      previous.type === TOKEN.CLOSE &&
+      previous.text !== '/>' &&
+      current.type === TOKEN.OPEN &&
+      current.text.substr(0, 2) === '</' &&
+      ((previous.previous.type === TOKEN.OPEN &&
+        previous.previous.text.substr(0, 2) !== '</') ||
+        (previous.previous.type === TOKEN.VALUE &&
+          previous.previous.parent.text.substr(0, 2) !== '</'))
+    ) {
+      previous.text = '/>';
+      current = this._get_next_token(current, open_token);
+      if (open_token && this._is_closing(current, open_token)) {
+        current.opened = open_token;
+        open_token.closed = current;
+        open_token = open_stack.pop();
+        current.parent = open_token;
+      }
+      current = this._get_next_token(current, open_token);
+      if (this._is_opening(current)) {
+        open_stack.push(open_token);
+        open_token = current;
+      }
+    }
+    ////////////////////////////////////////////////
     current.previous = previous;
     previous.next = current;
     this.__tokens.add(current);
