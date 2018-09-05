@@ -5,11 +5,11 @@ var BASETOKEN = require('../core/tokenizer').TOKEN;
 var Directives = require('../core/directives').Directives;
 
 var TOKEN = {
-  TAG_OPEN: 'TK_TAG_OPEN',
-  TAG_CLOSE: 'TK_TAG_CLOSE',
+  TAG_OPEN: BASETOKEN.OPEN,
+  TAG_CLOSE: BASETOKEN.CLOSE,
   ATTRIBUTE: 'TK_ATTRIBUTE',
   EQUALS: 'TK_EQUALS',
-  VALUE: 'TK_VALUE',
+  VALUE: BASETOKEN.VALUE,
   COMMENT: 'TK_COMMENT',
   TEXT: 'TK_TEXT',
   UNKNOWN: 'TK_UNKNOWN',

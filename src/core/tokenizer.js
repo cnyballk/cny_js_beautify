@@ -10,6 +10,7 @@ var TOKEN = {
   EOF: 'TK_EOF',
   CLOSE: 'TK_TAG_CLOSE',
   OPEN: 'TK_TAG_OPEN',
+  VALUE: 'TK_VALUE',
 };
 
 var Tokenizer = function(input_string, options) {
@@ -57,6 +58,7 @@ Tokenizer.prototype.tokenize = function() {
       current.parent = open_token;
     }
     ////////////////////////如果组件内无子元素则直接闭合标签
+
     if (
       previous.type === TOKEN.CLOSE &&
       previous.text !== '/>' &&
@@ -91,7 +93,6 @@ Tokenizer.prototype.tokenize = function() {
   }
   return this.__tokens;
 };
-
 Tokenizer.prototype._is_first_token = function() {
   return this.__tokens.isEmpty();
 };

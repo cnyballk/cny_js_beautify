@@ -362,7 +362,9 @@ Beautifier.prototype._handle_tag_close = function(
     printer.add_raw_token(raw_token);
   } else {
     if (last_tag_token.tag_start_char === '<') {
-      // printer.set_space_before_token(raw_token.text[0] === '/'); // space before />, no space before >
+      printer.set_space_before_token(
+        raw_token.previous.text[0] !== '<' && raw_token.text[0] === '/'
+      ); // space before x="xxx" />, no space before <x> or <x />
 
       if (
         //在这里 孔德权
@@ -386,13 +388,44 @@ Beautifier.prototype._handle_tag_close = function(
   }
   return parser_token;
 };
-
+//value里增加空格
+Beautifier.prototype.add_space = function(text) {
+  const s = text.split(''),
+    beforeSpace = ['}'],
+    afterSpace = ['{'],
+    warpSpace = [':', '?'];
+  const l = s.length;
+  let str = '',
+    last_str = '',
+    w = '';
+  for (let i = 0; i < l; i++) {
+    w = s[i];
+    if (warpSpace.indexOf(w) !== -1) {
+      str += ' ';
+      str += w;
+      str += ' ';
+    } else if (beforeSpace.indexOf(w) !== -1 && last_str !== '}') {
+      str += ' ';
+      str += w;
+    } else if (afterSpace.indexOf(w) !== -1 && last_str == '{') {
+      str += w;
+      str += ' ';
+    } else {
+      str += w;
+    }
+    last_str = w;
+  }
+  return str;
+};
 Beautifier.prototype._handle_inside_tag = function(
   printer,
   raw_token,
   last_tag_token,
   tokens
 ) {
+  if (raw_token.type === TOKEN.VALUE) {
+    raw_token.text = this.add_space(raw_token.text);
+  }
   var parser_token = { text: raw_token.text, type: raw_token.type };
   printer.set_space_before_token(
     raw_token.newlines || raw_token.whitespace_before !== ''
@@ -561,12 +594,17 @@ Beautifier.prototype.is_next_tag_open = function(raw_token) {
 };
 //判断上一个是不是闭合标签 </xxxx> or <xxxxx />
 Beautifier.prototype.is_perv_tag_close = function(raw_token) {
-  return (
-    (raw_token.previous && raw_token.previous.text === '/>') ||
-    (raw_token.previous.text === '>' &&
-      (raw_token.previous.previous &&
-        raw_token.previous.previous.text.substr(0, 2) === '</'))
-  );
+  if (!raw_token.previous) return false;
+  if (raw_token.previous.text === '/>') return true;
+  if (!raw_token.previous.previous) return false;
+  switch (raw_token.previous.previous.type) {
+    case TOKEN.TAG_OPEN:
+      return raw_token.previous.previous.text.substr(0, 2) === '</';
+    case TOKEN.ATTRIBUTE:
+      return raw_token.previous.previous.parent.text.substr(0, 2) === '</';
+    default:
+      return false;
+  }
 };
 Beautifier.prototype._handle_tag_open = function(
   printer,
@@ -576,19 +614,15 @@ Beautifier.prototype._handle_tag_open = function(
 ) {
   ////////////////////////////////////////转行
   //如果是打开标签并且不是</xxx>
-  if (raw_token.type === TOKEN.TAG_OPEN && raw_token.text.indexOf('</') !== 0) {
+  if (raw_token.type === TOKEN.TAG_OPEN && raw_token.text.search('</') !== 0) {
     printer.print_newline(false);
   }
   ////上一个是其他的结束标签
-  if (
-    (raw_token.previous && raw_token.previous.text === '/>') ||
-    (raw_token.previous.previous &&
-      raw_token.previous.previous.text.substr(0, 2) === '</')
-  ) {
+  if (this.is_perv_tag_close(raw_token)) {
     printer.print_newline(false);
   }
   if (
-    ////上一个是文本并且有属性或者上一个有其他组件
+    ////上一个是文本并且有属性或者文本上一个有其他组件
     raw_token.previous &&
     raw_token.previous.type === TOKEN.TEXT &&
     (last_tag_token.has_wrapped_attrs ||
