@@ -423,9 +423,9 @@ Beautifier.prototype._handle_inside_tag = function(
   last_tag_token,
   tokens
 ) {
-  if (raw_token.type === TOKEN.VALUE) {
-    raw_token.text = this.add_space(raw_token.text);
-  }
+  // if (raw_token.type === TOKEN.VALUE) {
+  //   raw_token.text = this.add_space(raw_token.text);
+  // }
   var parser_token = { text: raw_token.text, type: raw_token.type };
   printer.set_space_before_token(
     raw_token.newlines || raw_token.whitespace_before !== ''
