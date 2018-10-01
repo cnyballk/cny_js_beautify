@@ -27,6 +27,10 @@ function Options(options) {
     'wrap_attributes_indent_size',
     this.indent_size
   );
+  this.disable_automatic_closing_labels = this._get_boolean(
+    'disable_automatic_closing_labels',
+    this.disable_automatic_closing_labels
+  );
   this.wrap_attributes_count = this._get_number(
     'wrap_attributes_count',
     this.wrap_attributes_count
