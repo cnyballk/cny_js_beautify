@@ -17,7 +17,7 @@ const test = () => {
   console.log(b);
 };
 var a2 = `
-<button></button>
+<button wx:if="{{ a?a: a}}"></button>
 <text>
          123
   33
