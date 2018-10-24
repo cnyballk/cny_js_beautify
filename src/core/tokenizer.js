@@ -60,6 +60,7 @@ Tokenizer.prototype.tokenize = function() {
     ////////////////////////如果组件内无子元素则直接闭合标签
 
     if (
+      !this._options.disable_automatic_closing_labels &&
       previous.type === TOKEN.CLOSE &&
       previous.text !== '/>' &&
       current.type === TOKEN.OPEN &&

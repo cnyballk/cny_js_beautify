@@ -17,16 +17,18 @@ const test = () => {
   console.log(b);
 };
 var a2 = `
-<button id="x" id="x" id="x" id="x"id="x">
-</button>
-<button id="x" id="x" id="x" id="x"id="x">
-</button>
-   
+<button wx:if="{{ a?a: a}}"></button>
+<text>
+         123
+  33
+444</text>
 `;
 const test2 = () => {
   var b = style_html(a2, {
     indent_size: 2,
     wrap_attributes_count: 4,
+    unformatted: ['text'],
+    disable_automatic_closing_labels: false,
     wrap_attributes: 'force-expand-multiline',
   });
   console.log('=2=');
@@ -35,4 +37,5 @@ const test2 = () => {
   console.log(b);
   console.log('==');
 };
+// test();
 test2();
