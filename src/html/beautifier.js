@@ -296,6 +296,7 @@ Beautifier.prototype.beautify = function() {
 
     n_raw_token = n_tokens.next();
   }
+  __arrrr.push(atrr_num);
   __arrrr.shift();
   var parser_token = null;
   var raw_token = tokens.next();
@@ -507,11 +508,8 @@ Beautifier.prototype._handle_text = function(
   last_tag_token
 ) {
   var parser_token = { text: raw_token.text, type: 'TK_CONTENT' };
-  if (
-    last_tag_token.has_wrapped_attrs ||
-    this.is_perv_tag_close(raw_token) ||
-    this.is_next_tag_open(raw_token)
-  ) {
+  //{{ ss }} 会转行
+  if (this.is_perv_tag_close(raw_token)) {
     printer.print_newline(false);
   }
   if (last_tag_token.custom_beautifier) {

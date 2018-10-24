@@ -17,7 +17,11 @@ const test = () => {
   console.log(b);
 };
 var a2 = `
-    <button ><button wx:for="{{a?1?1:2}}"></button><button >11</button><button ></button></button>
+<button id="x" id="x" id="x" id="x"id="x">
+</button>
+<button id="x" id="x" id="x" id="x"id="x">
+</button>
+   
 `;
 const test2 = () => {
   var b = style_html(a2, {
@@ -31,5 +35,4 @@ const test2 = () => {
   console.log(b);
   console.log('==');
 };
-test();
 test2();
